@@ -1,0 +1,7 @@
+aws configure
+
+
+aws --endpoint-url=http://localhost:4566 iam create-user --user-name allowed-user --region us-east-1
+
+
+

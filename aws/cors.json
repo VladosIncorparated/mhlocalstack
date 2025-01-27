@@ -1,0 +1,8 @@
+[
+  {
+    "AllowedOrigins": ["http://localhost:8080"],  // Replace with your front-end URL
+    "AllowedMethods": ["GET"],
+    "AllowedHeaders": ["*"],
+    "MaxAgeSeconds": 3000
+  }
+]
