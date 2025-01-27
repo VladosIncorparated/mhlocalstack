@@ -1,0 +1,42 @@
+version: "3.7"
+
+services:
+  s3:
+    container_name: s3
+    image: localstack/localstack
+    ports:
+      - "127.0.0.1:4566:4566"            # LocalStack Gateway
+    environment:
+      # - SERVICES=s3    # Only start the S3 service
+      - SERVICES=iam, s3
+      - DEBUG=1        # Enable debug mode
+      - DATA_DIR=/tmp/localstack/data
+      - DEFAULT_REGION=my-local-bucket
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - LOCALSTACK_AUTH_TOKEN=ls-dedAjUVi-jIbI-LUxa-9205-FiHINiGa3309
+    command: ["create-s3-bucket.sh"]
+    volumes:
+      - "${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - ./aws:/etc/localstack/init/ready.d
+    labels:
+      - traefik.enable=true
+      - traefik.http.middlewares.s3_https.redirectscheme.scheme=https
+      - traefik.http.routers.s3.entrypoints=web
+      - traefik.http.routers.s3.middlewares=s3_https@docker
+      - traefik.http.routers.s3.rule=Host(`s3.server_name.youdomain`)
+      - traefik.http.routers.s3_https.entrypoints=websecure
+      - traefik.http.routers.s3_https.rule=Host(`s3.server_name.youdomain`)
+      - traefik.http.routers.s3_https.tls=true
+      - traefik.http.routers.s3_https.tls.certresolver=le
+      - traefik.http.services.s3.loadbalancer.server.port=8080
+    deploy:
+      resources:
+        limits:
+          cpus: '0.20'     # Ограничение до 20% CPU
+          memory: 512M      # Ограничение до 512MB памяти
+networks:
+  default:
+    external:
+      name: traefik_default
