@@ -30,7 +30,7 @@ services:
       - traefik.http.routers.s3_https.rule=Host(`s3.server_name.youdomain`)
       - traefik.http.routers.s3_https.tls=true
       - traefik.http.routers.s3_https.tls.certresolver=le
-      - traefik.http.services.s3.loadbalancer.server.port=8080
+      - traefik.http.services.s3.loadbalancer.server.port=4566
     deploy:
       resources:
         limits:
